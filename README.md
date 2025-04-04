@@ -5,7 +5,7 @@
 
 ## Overview
 
-This is a project from [The Odin Project](https://theodinproject.com): [Project: Calculator](https://www.theodinproject.com/lessons/node-path-javascript-library). This project had us create an interactive Tic Tac Toe Game on a webpage.
+This is a project from [The Odin Project](https://theodinproject.com): [Project: Tic Tac Toe](https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe). This project had us create an interactive Tic Tac Toe Game on a webpage.
 
 ## Learning Points
 
