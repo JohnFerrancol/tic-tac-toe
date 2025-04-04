@@ -1,6 +1,6 @@
 # Tic Tac Toe
 
- [Live Demo](https://johnferrancol.github.io/tic-tac-toe/)<br/><br/>
+[Live Demo](https://johnferrancol.github.io/tic-tac-toe/)<br/><br/>
 [![The Odin Project](https://img.shields.io/badge/The%20Odin%20Project-A9792B?logo=theodinproject&logoColor=fff)](#)
 
 ## Overview
@@ -9,7 +9,7 @@ This is a project from [The Odin Project](https://theodinproject.com): [Project:
 
 ## Learning Points
 
-- Understood how to format JavaScript code using  factory functions and module patterns
+- Understood how to format JavaScript code using factory functions and module patterns
 - Understood more JavaScript concepts like closures, scope and how to use them in factory functions
 - Understood using IIFEs to create module patterns to avoid global scope clutter
 
@@ -21,8 +21,8 @@ This is a project from [The Odin Project](https://theodinproject.com): [Project:
 
 ## Roadmap
 
-- [ ] Creating functions and IIFEs to create the Gameboard Object as well as the Player Objects
-- [ ] Writing a functionality to make the code work on the console first
+- [x] Creating functions and IIFEs to create the Gameboard Object as well as the Player Objects
+- [x] Writing a functionality to make the code work on the console first
 - [ ] Writing functions to handle DOM logic
 - [ ] Allow users to input their names
 - [ ] Add buttosn to start/restart the game and display the results
