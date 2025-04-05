@@ -1,3 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+:root {
+  --font-family: "Poppins", sans-serif;
+  --purple: #8c52ff;
+  --white: #ffffff;
+  --black: #333333;
+  --light-grey: #f0f4fa;
+  --green: #9fff9c;
+  --content-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,6 +17,58 @@
 }
 
 body {
-  background-color: yellow;
-  color: white;
+  font-family: var(--font-family);
+  background-color: var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+main.content {
+  background-color: var(--white);
+  color: var(--black);
+  width: 40%;
+  height: 60%;
+  border-radius: 2rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+main .game-title {
+  font-size: 2.2rem;
+  color: var(--purple);
+}
+
+main .game-container {
+  background-color: var(--black);
+  width: 25rem;
+  height: 25rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+main .cell {
+  background-color: var(--white);
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main .winning-cell {
+  background-color: var(--green);
+}
+
+main .cell:hover {
+  background-color: var(--light-grey);
+}
+
+main .winning-cell:hover {
+  background-color: var(--green);
 }

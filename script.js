@@ -1,5 +1,5 @@
 // Gameboard object is used to manipulate the contents of the gameboard
-function Gameboard() {
+const Gameboard = (function () {
   let gameBoardArray = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
 
   const displayBoard = () => {
@@ -14,24 +14,23 @@ function Gameboard() {
 
   const getBoardArray = () => gameBoardArray;
 
-  const markBoard = (marker, position) => {
-    gameBoardArray[position - 1] = marker;
+  const markBoard = (marker, index) => {
+    gameBoardArray[index] = marker;
   };
 
   return { displayBoard, getBoardArray, markBoard };
-}
+})();
 
 // Player object is used to define the details of the user
-function Player(name, marker) {
+const Player = (name, marker) => {
   return { name, marker };
-}
+};
 
 // GameController Object used to define the logic flow of the game
-function GameController() {
+const GameController = (function () {
   const player1 = Player("Player 1", "X");
   const player2 = Player("Player 2", "O");
   let currentPlayer = player1;
-  const gameboard = Gameboard();
 
   // Handling switching of players
   const switchPlayer = () => {
@@ -39,33 +38,36 @@ function GameController() {
   };
 
   // Handle Player turns
-  const playTurn = () => {
-    console.log(`${currentPlayer.name}'s turn`);
-    gameboard.displayBoard();
-    let currentBoard = gameboard.getBoardArray();
+  const playTurn = (index) => {
+    const currentBoard = Gameboard.getBoardArray();
 
-    // Keep prompting for a valid position and ensure that the position is not taken
-    while (true) {
-      let desiredPosition = Number(
-        prompt("Enter desired position, Enter a number from 1-9")
-      );
+    // If a game is over (Winner found or it is a tie) or the input is not valid, do nothing
+    // Else mark the board
+    if (foundWinner() || isTie() || currentBoard[index] !== " ") return;
+    else Gameboard.markBoard(currentPlayer.marker, index);
 
-      if (!(1 <= desiredPosition && desiredPosition <= 9)) {
-        alert("Error! Enter a Position from 1-9! ");
-      } else if (currentBoard[desiredPosition - 1] != " ") {
-        alert("Error! Position already taken up! ");
-      } else {
-        gameboard.markBoard(currentPlayer.marker, desiredPosition);
-        break;
-      }
+    // If found a winner or it is a tie after marking the board, end the game
+    const winner = foundWinner();
+    if (winner) {
+      DisplayController.renderBoard();
+      DisplayController.updateMessage(`${winner.playerName} Won!`);
+      DisplayController.showWinningCells(winner.winPattern);
+      return;
+    } else if (isTie()) {
+      DisplayController.renderBoard();
+      DisplayController.updateMessage(`Tie!`);
+      return;
+    } else {
+      // Else continue playing
+      switchPlayer();
+      DisplayController.renderBoard();
+      DisplayController.updateMessage(`${currentPlayer.name}'s Turn`);
     }
-
-    switchPlayer();
   };
 
   // Handling when there is a winner
   const foundWinner = () => {
-    const currentBoard = gameboard.getBoardArray();
+    const currentBoard = Gameboard.getBoardArray();
     const winPatterns = [
       [0, 1, 2],
       [3, 4, 5],
@@ -88,10 +90,9 @@ function GameController() {
         currentBoard[a] === currentBoard[b] &&
         currentBoard[a] === currentBoard[c]
       ) {
-        console.log(
-          `${currentBoard[a] === "X" ? player1.name : player2.name} wins!`
-        );
-        return true;
+        const playerName =
+          currentBoard[a] === "X" ? player1.name : player2.name;
+        return { playerName, winPattern };
       }
     }
     return false;
@@ -99,27 +100,51 @@ function GameController() {
 
   // Handling when all the squares are filled up and there is no winner
   const isTie = () => {
-    if (!gameboard.getBoardArray().includes(" ")) {
-      console.log("Tie!");
+    if (!Gameboard.getBoardArray().includes(" ")) {
       return true;
     }
     return false;
   };
 
-  // Handling playing the turn
-  const playGame = () => {
-    while (true) {
-      if (foundWinner() || isTie()) {
-        break;
-      }
-      playTurn();
-    }
+  return { playTurn };
+})();
 
-    console.log("Game Over");
-    gameboard.displayBoard();
+// GameController Object used to update and handle event listeners in the UI
+const DisplayController = (function () {
+  const gameCells = document.querySelectorAll(".cell");
+  const message = document.querySelector(".message");
+
+  // When an individual cell is pressed, run an instance of a turn of tic tac toe
+  gameCells.forEach((cell) => {
+    cell.addEventListener("click", () => {
+      let cellIndex = cell.dataset.index;
+      GameController.playTurn(cellIndex);
+    });
+  });
+
+  // Render the board based on the board array from the Gameboard object
+  const renderBoard = () => {
+    const boardArray = Gameboard.getBoardArray();
+
+    gameCells.forEach((cell) => {
+      let cellIndex = Number(cell.dataset.index);
+      cell.textContent = boardArray[cellIndex];
+    });
   };
 
-  playGame();
-}
+  const updateMessage = (messageUpdate) => {
+    message.textContent = messageUpdate;
+  };
 
-GameController();
+  // Highlighting the winning pattern by coloring the cells green
+  const showWinningCells = (winPattern) => {
+    gameCells.forEach((cell) => {
+      let cellIndex = Number(cell.dataset.index);
+      if (winPattern.includes(cellIndex)) {
+        cell.classList.add("winning-cell");
+      }
+    });
+  };
+
+  return { renderBoard, updateMessage, showWinningCells };
+})();
