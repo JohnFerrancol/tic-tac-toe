@@ -8,27 +8,19 @@ window.addEventListener("load", () => {
 const Gameboard = (function () {
   let gameBoardArray = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
 
-  const displayBoard = () => {
-    console.log(`
-        ${gameBoardArray.slice(0, 3).join(" | ")}
-        ---------
-        ${gameBoardArray.slice(3, 6).join(" | ")}
-        ---------
-        ${gameBoardArray.slice(6, 9).join(" | ")}
-      `);
-  };
-
   const getBoardArray = () => gameBoardArray;
 
+  // Add the marking to the gamboard array
   const markBoard = (marker, index) => {
     gameBoardArray[index] = marker;
   };
 
+  // Remove all of the markings in the game board array
   const resetBoard = () => {
-    gameBoardArray = [" ", " ", " ", " ", " ", " ", " ", " ", " "]; // Reset the game board
+    gameBoardArray = gameBoardArray.map(() => " ");
   };
 
-  return { displayBoard, getBoardArray, markBoard, resetBoard };
+  return { getBoardArray, markBoard, resetBoard };
 })();
 
 // Player object is used to define the details of the user
@@ -54,7 +46,6 @@ const GameController = (function () {
   // Get the player values from the modal and display the message for player1 turn
   const getPlayers = (playersArray) => {
     [player1, player2] = playersArray;
-    console.log(player1, player2);
     currentPlayer = player1;
     DisplayController.updateMessage(`${player1.name}'s Turn`);
   };
@@ -157,16 +148,6 @@ const GameController = (function () {
 // GameController Object used to update and handle event listeners in the UI
 const DisplayController = (function () {
   const gameCells = document.querySelectorAll(".cell");
-  const generatePlayersDialog = document.querySelector(".generate-players");
-  const message = document.querySelector(".message");
-  const closeDialogIcon = document.querySelector(".close-dialog-icon");
-  const selectionMarker = document.querySelector(".select-marker");
-  const player2MarkerDisplay = document.querySelector(".player-2-marker");
-  const dialogForm = document.querySelector("form");
-
-  const newRoundButton = document.querySelector("#new-round-button");
-  const newGameButton = document.querySelector("#new-game-button");
-
   // When an individual cell is pressed, run an instance of a turn of tic tac toe
   gameCells.forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -175,6 +156,7 @@ const DisplayController = (function () {
     });
   });
 
+  const newRoundButton = document.querySelector("#new-round-button");
   // Handling when the button is pressed to reset the round
   newRoundButton.addEventListener("click", () => {
     // Alert the user when they want to press the new round button even though the round is not over
@@ -186,6 +168,8 @@ const DisplayController = (function () {
     updateMessage(`${GameController.getFirstPlayer()}'s Turn`);
   });
 
+  const newGameButton = document.querySelector("#new-game-button");
+  const generatePlayersDialog = document.querySelector(".generate-players");
   // Handling when the button is pressed to start a new game
   newGameButton.addEventListener("click", () => {
     // Show the modal and display the player 2 marker
@@ -193,26 +177,7 @@ const DisplayController = (function () {
     DisplayController.getPlayer2Marker();
   });
 
-  // Handling when the user wants to close the dialog
-  closeDialogIcon.addEventListener("click", () => {
-    // Only if the icon is enabled then reset the form and close it
-    // This is to prevent the user from closing it when they first render the web page
-    if (closeDialogIcon.classList.contains("enable-close-dialog")) {
-      dialogForm.reset();
-      generatePlayersDialog.close();
-    }
-  });
-
-  // Dynamically change the marker of player 2 from player 1's marker
-  const getPlayer2Marker = () => {
-    player2MarkerDisplay.textContent = `Player 2's marker: ${
-      selectionMarker.value === "X" ? "O" : "X"
-    }`;
-  };
-
-  // When the selection changes, change player 2's marker
-  selectionMarker.addEventListener("change", getPlayer2Marker);
-
+  const dialogForm = document.querySelector("form");
   // Update the player information from the dialog form
   dialogForm.addEventListener("submit", (event) => {
     // Prevent the page from refreshing
@@ -252,6 +217,28 @@ const DisplayController = (function () {
     restartBoard();
   });
 
+  const closeDialogIcon = document.querySelector(".close-dialog-icon");
+  // Handling when the user wants to close the dialog
+  closeDialogIcon.addEventListener("click", () => {
+    // Only if the icon is enabled then reset the form and close it
+    // This is to prevent the user from closing it when they first render the web page
+    if (closeDialogIcon.classList.contains("enable-close-dialog")) {
+      dialogForm.reset();
+      generatePlayersDialog.close();
+    }
+  });
+
+  const player2MarkerDisplay = document.querySelector(".player-2-marker");
+  // Dynamically change the marker of player 2 from player 1's marker
+  const getPlayer2Marker = () => {
+    player2MarkerDisplay.textContent = `Player 2's marker: ${
+      selectionMarker.value === "X" ? "O" : "X"
+    }`;
+  };
+  const selectionMarker = document.querySelector(".select-marker");
+  // When the selection changes, change player 2's marker
+  selectionMarker.addEventListener("change", getPlayer2Marker);
+
   // Render the board based on the board array from the Gameboard object
   const renderBoard = () => {
     const boardArray = Gameboard.getBoardArray();
@@ -262,6 +249,7 @@ const DisplayController = (function () {
     });
   };
 
+  const message = document.querySelector(".message");
   // Update the Message UI to tell the user whether game has ended or which turn is it
   const updateMessage = (messageUpdate) => {
     message.textContent = messageUpdate;
@@ -284,6 +272,7 @@ const DisplayController = (function () {
       }
     });
   };
+
   // Handles cases where the user wants to reset the board when starting a new game or starting a new round
   const restartBoard = () => {
     // Restart the board by restarting the gameboard array
