@@ -94,6 +94,22 @@ main .winning-cell:hover {
   background-color: var(--green);
 }
 
+main .button-container {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+main .button-container > button {
+  font-size: 1.5rem;
+  font-weight: 1000;
+  padding: 1rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: var(--purple);
+  color: var(--white);
+}
+
 dialog.generate-players {
   font-size: 1.2rem;
   font-weight: bold;

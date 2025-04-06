@@ -1,7 +1,6 @@
 window.addEventListener("load", () => {
   const dialogContainer = document.querySelector("dialog");
   dialogContainer.showModal();
-
   DisplayController.getPlayer2Marker();
 });
 
@@ -25,7 +24,11 @@ const Gameboard = (function () {
     gameBoardArray[index] = marker;
   };
 
-  return { displayBoard, getBoardArray, markBoard };
+  const resetBoard = () => {
+    gameBoardArray = [" ", " ", " ", " ", " ", " ", " ", " ", " "]; // Reset the game board
+  };
+
+  return { displayBoard, getBoardArray, markBoard, resetBoard };
 })();
 
 // Player object is used to define the details of the user
@@ -76,11 +79,13 @@ const GameController = (function () {
       DisplayController.renderBoard();
       DisplayController.updateMessage(`${winner.playerName} Won!`);
 
-      // Increase the score of the winner
+      // Increase the score of the winner and set the current player(first player to play) as the losing player
       if (winner.playerName === player1.name) {
         player1.incrementScore();
+        currentPlayer = player2;
       } else {
         player2.incrementScore();
+        currentPlayer = player1;
       }
 
       // Update the score and highlight the cells
@@ -90,6 +95,9 @@ const GameController = (function () {
     } else if (isTie()) {
       DisplayController.renderBoard();
       DisplayController.updateMessage(`Tie!`);
+
+      // Randomise the new player if there is a tie
+      currentPlayer = Math.random() > 0.5 ? player1 : player2;
       return;
     } else {
       // Else continue playing
@@ -140,7 +148,10 @@ const GameController = (function () {
     return false;
   };
 
-  return { playTurn, getPlayers };
+  // Handling getting the first player of each round after each round reset
+  const getFirstPlayer = () => currentPlayer.name;
+
+  return { playTurn, getPlayers, getFirstPlayer, foundWinner, isTie };
 })();
 
 // GameController Object used to update and handle event listeners in the UI
@@ -153,12 +164,34 @@ const DisplayController = (function () {
   const player2MarkerDisplay = document.querySelector(".player-2-marker");
   const dialogForm = document.querySelector("form");
 
+  const newRoundButton = document.querySelector("#new-round-button");
+
   // When an individual cell is pressed, run an instance of a turn of tic tac toe
   gameCells.forEach((cell) => {
     cell.addEventListener("click", () => {
       let cellIndex = cell.dataset.index;
       GameController.playTurn(cellIndex);
     });
+  });
+
+  // Handling when the button is pressed to reset the round
+  newRoundButton.addEventListener("click", () => {
+    // Alert the user when they want to press the new round button even though the round is not over
+    if (!(GameController.foundWinner() || GameController.isTie())) {
+      alert("Game is still ongoing! Finish the round before restarting");
+      return;
+    }
+    // Restart the board by restarting the gameboard array
+    Gameboard.resetBoard();
+
+    // Remove the highlightd cells
+    gameCells.forEach((cell) => {
+      cell.classList.remove("winning-cell");
+    });
+
+    // Re-render the board and display the first player to play
+    renderBoard();
+    updateMessage(`${GameController.getFirstPlayer()}'s Turn`);
   });
 
   // Dynamically change the marker of player 2 from player 1's marker
@@ -177,8 +210,8 @@ const DisplayController = (function () {
     event.preventDefault();
 
     // Obtain the relevant values
-    const player1Name = document.querySelector("#player1-name").value;
-    const player2Name = document.querySelector("#player2-name").value;
+    const player1Name = document.querySelector("#player1-name").value.trim();
+    const player2Name = document.querySelector("#player2-name").value.trim();
     const player1Marker = selectionMarker.value;
     const player2Marker = player2MarkerDisplay.textContent.slice(-1);
 
@@ -189,11 +222,11 @@ const DisplayController = (function () {
     ];
     GameController.getPlayers(players);
 
-    // Display the new names in the score display
-    const player1NameDisplay = document.querySelector(".player-1-name");
-    player1NameDisplay.textContent = player1Name;
-    const player2NameDisplay = document.querySelector(".player-2-name");
-    player2NameDisplay.textContent = player2Name;
+    // Display the new names along with the marker in the score display
+    const player1Display = document.querySelector(".player-1-display");
+    player1Display.textContent = `${player1Name}(${player1Marker})`;
+    const playerDisplay = document.querySelector(".player-2-display");
+    playerDisplay.textContent = `${player2Name}(${player2Marker})`;
 
     // Initialise the scores
     updateScores(0, 0);
@@ -216,6 +249,7 @@ const DisplayController = (function () {
     });
   };
 
+  // Update the Message UI to tell the user whether game has ended or which turn is it
   const updateMessage = (messageUpdate) => {
     message.textContent = messageUpdate;
   };
