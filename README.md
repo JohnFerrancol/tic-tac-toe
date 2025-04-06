@@ -25,4 +25,4 @@ This is a project from [The Odin Project](https://theodinproject.com): [Project:
 - [x] Writing a functionality to make the code work on the console first
 - [x] Writing functions to handle DOM logic
 - [x] Allow users to input their names
-- [ ] Add buttosn to start/restart the game and display the results
+- [x] Add buttosn to start/restart the game and display the results

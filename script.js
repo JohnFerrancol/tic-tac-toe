@@ -165,6 +165,7 @@ const DisplayController = (function () {
   const dialogForm = document.querySelector("form");
 
   const newRoundButton = document.querySelector("#new-round-button");
+  const newGameButton = document.querySelector("#new-game-button");
 
   // When an individual cell is pressed, run an instance of a turn of tic tac toe
   gameCells.forEach((cell) => {
@@ -181,17 +182,25 @@ const DisplayController = (function () {
       alert("Game is still ongoing! Finish the round before restarting");
       return;
     }
-    // Restart the board by restarting the gameboard array
-    Gameboard.resetBoard();
-
-    // Remove the highlightd cells
-    gameCells.forEach((cell) => {
-      cell.classList.remove("winning-cell");
-    });
-
-    // Re-render the board and display the first player to play
-    renderBoard();
+    restartBoard();
     updateMessage(`${GameController.getFirstPlayer()}'s Turn`);
+  });
+
+  // Handling when the button is pressed to start a new game
+  newGameButton.addEventListener("click", () => {
+    // Show the modal and display the player 2 marker
+    generatePlayersDialog.showModal();
+    DisplayController.getPlayer2Marker();
+  });
+
+  // Handling when the user wants to close the dialog
+  closeDialogIcon.addEventListener("click", () => {
+    // Only if the icon is enabled then reset the form and close it
+    // This is to prevent the user from closing it when they first render the web page
+    if (closeDialogIcon.classList.contains("enable-close-dialog")) {
+      dialogForm.reset();
+      generatePlayersDialog.close();
+    }
   });
 
   // Dynamically change the marker of player 2 from player 1's marker
@@ -231,12 +240,16 @@ const DisplayController = (function () {
     // Initialise the scores
     updateScores(0, 0);
 
-    // Close the dialog
-    generatePlayersDialog.close();
-  });
+    if (!closeDialogIcon.classList.contains("enable-close-dialog")) {
+      closeDialogIcon.classList.add("enable-close-dialog");
+    }
 
-  closeDialogIcon.addEventListener("click", () => {
-    console.log("I can click you now!");
+    // Close the dialog and reset the form
+    dialogForm.reset();
+    generatePlayersDialog.close();
+
+    // Only when the board is submitted restart it
+    restartBoard();
   });
 
   // Render the board based on the board array from the Gameboard object
@@ -270,6 +283,19 @@ const DisplayController = (function () {
         cell.classList.add("winning-cell");
       }
     });
+  };
+  // Handles cases where the user wants to reset the board when starting a new game or starting a new round
+  const restartBoard = () => {
+    // Restart the board by restarting the gameboard array
+    Gameboard.resetBoard();
+
+    // Remove the highlightd cells
+    gameCells.forEach((cell) => {
+      cell.classList.remove("winning-cell");
+    });
+
+    // Re-render the board and display the first player to play
+    renderBoard();
   };
 
   return {
