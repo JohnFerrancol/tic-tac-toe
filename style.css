@@ -8,6 +8,10 @@
   --light-grey: #f0f4fa;
   --green: #9fff9c;
   --content-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+  --disable-cancel: invert(86%) sepia(8%) saturate(265%) hue-rotate(177deg)
+    brightness(84%) contrast(86%);
+  --enable-cancel: invert(17%) sepia(1%) saturate(3325%) hue-rotate(340deg)
+    brightness(97%) contrast(89%);
 }
 
 * {
@@ -51,6 +55,8 @@ main .game-container {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 0.5rem;
+  box-shadow: var(--content-box-shadow);
+  border-radius: 0.5rem;
 }
 
 main .cell {
@@ -71,4 +77,97 @@ main .cell:hover {
 
 main .winning-cell:hover {
   background-color: var(--green);
+}
+
+dialog.generate-players {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: inherit;
+  color: var(--black);
+  margin: auto;
+  width: 20%;
+  border: none;
+  padding: 2rem 1rem;
+  border-radius: 1rem;
+}
+
+dialog .close-dialog-container {
+  display: flex;
+  justify-content: end;
+  margin-bottom: 0.5rem;
+}
+
+dialog .close-dialog-icon {
+  width: 2rem;
+  pointer-events: none;
+  filter: var(--disable-cancel);
+}
+
+dialog .enable-close-dialog {
+  pointer-events: auto;
+  filter: var(--enable-cancel);
+}
+
+dialog .dialog-title {
+  color: var(--purple);
+  font-weight: 900;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+dialog .dialog-inputs {
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+dialog .dialog-inputs:focus {
+  outline: none;
+  border: 2px solid var(--purple);
+}
+
+dialog .choose-marker-container {
+  margin: 1rem 0;
+}
+
+select,
+::picker(select) {
+  appearance: base-select;
+}
+
+dialog .select-marker {
+  border: 2px solid var(--black);
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  transition: 0.4s;
+}
+
+select:hover,
+select:focus {
+  background: var(--light-grey);
+}
+
+select::picker-icon {
+  color: #999;
+  transition: 0.4s rotate;
+}
+
+select:open::picker-icon {
+  rotate: 180deg;
+}
+
+dialog .submit-button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background-color: var(--purple);
+  color: var(--white);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  justify-self: center;
 }

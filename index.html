@@ -10,7 +10,7 @@
   <body>
     <main class="content">
       <h1 class="game-title">Tic Tac Toe</h1>
-      <h2 class="message">Player 1's Turn</h2>
+      <h2 class="message"></h2>
       <div class="game-container">
         <div data-index="0" class="cell"></div>
         <div data-index="1" class="cell"></div>
@@ -23,5 +23,49 @@
         <div data-index="8" class="cell"></div>
       </div>
     </main>
+
+    <dialog class="generate-players">
+      <div class="close-dialog-container">
+        <img
+          src="assets/logos/close.svg"
+          alt="Close Dialog"
+          class="close-dialog-icon"
+        />
+      </div>
+      <form>
+        <h3 class="dialog-title">Add Players</h3>
+        <input
+          class="dialog-inputs"
+          type="text"
+          id="player1-name"
+          name="player1-name"
+          placeholder="Player 1's Name"
+          required
+        />
+
+        <input
+          class="dialog-inputs"
+          type="text"
+          id="player2-name"
+          name="player2-name"
+          placeholder="Player 2's Name"
+          required
+        />
+
+        <div class="choose-marker-container">
+          <label for="marker">Choose a marker for Player 1:</label>
+          <select name="marker" id="marker" class="select-marker">
+            <option value="X">X</option>
+            <option value="O">O</option>
+          </select>
+        </div>
+
+        <p class="player-2-marker">Player 2's marker:</p>
+
+        <div class="button-container">
+          <button type="submit" class="submit-button">Submit</button>
+        </div>
+      </form>
+    </dialog>
   </body>
 </html>

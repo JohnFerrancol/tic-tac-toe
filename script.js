@@ -1,3 +1,10 @@
+window.addEventListener("load", () => {
+  const dialogContainer = document.querySelector("dialog");
+  dialogContainer.showModal();
+
+  DisplayController.getPlayer2Marker();
+});
+
 // Gameboard object is used to manipulate the contents of the gameboard
 const Gameboard = (function () {
   let gameBoardArray = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
@@ -28,9 +35,16 @@ const Player = (name, marker) => {
 
 // GameController Object used to define the logic flow of the game
 const GameController = (function () {
-  const player1 = Player("Player 1", "X");
-  const player2 = Player("Player 2", "O");
+  let player1 = Player("Player 1", "X");
+  let player2 = Player("Player 2", "O");
   let currentPlayer = player1;
+
+  const getPlayers = (playersArray) => {
+    [player1, player2] = playersArray;
+    console.log(player1, player2);
+    currentPlayer = player1;
+    DisplayController.updateMessage(`${player1.name}'s Turn`);
+  };
 
   // Handling switching of players
   const switchPlayer = () => {
@@ -91,7 +105,7 @@ const GameController = (function () {
         currentBoard[a] === currentBoard[c]
       ) {
         const playerName =
-          currentBoard[a] === "X" ? player1.name : player2.name;
+          currentBoard[a] === player1.marker ? player1.name : player2.name;
         return { playerName, winPattern };
       }
     }
@@ -106,13 +120,18 @@ const GameController = (function () {
     return false;
   };
 
-  return { playTurn };
+  return { playTurn, getPlayers };
 })();
 
 // GameController Object used to update and handle event listeners in the UI
 const DisplayController = (function () {
   const gameCells = document.querySelectorAll(".cell");
+  const generatePlayersDialog = document.querySelector(".generate-players");
   const message = document.querySelector(".message");
+  const closeDialogIcon = document.querySelector(".close-dialog-icon");
+  const selectionMarker = document.querySelector(".select-marker");
+  const player2MarkerDisplay = document.querySelector(".player-2-marker");
+  const dialogForm = document.querySelector("form");
 
   // When an individual cell is pressed, run an instance of a turn of tic tac toe
   gameCells.forEach((cell) => {
@@ -120,6 +139,33 @@ const DisplayController = (function () {
       let cellIndex = cell.dataset.index;
       GameController.playTurn(cellIndex);
     });
+  });
+
+  const getPlayer2Marker = () => {
+    player2MarkerDisplay.textContent = `Player 2's marker: ${
+      selectionMarker.value === "X" ? "O" : "X"
+    }`;
+  };
+
+  selectionMarker.addEventListener("change", getPlayer2Marker);
+
+  dialogForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const player1Name = document.querySelector("#player1-name").value;
+    const player2Name = document.querySelector("#player2-name").value;
+    const player1Marker = selectionMarker.value;
+    const player2Marker = player2MarkerDisplay.textContent.slice(-1);
+
+    const players = [
+      Player(player1Name, player1Marker),
+      Player(player2Name, player2Marker),
+    ];
+    GameController.getPlayers(players);
+    generatePlayersDialog.close();
+  });
+
+  closeDialogIcon.addEventListener("click", () => {
+    console.log("I can click you now!");
   });
 
   // Render the board based on the board array from the Gameboard object
@@ -146,5 +192,5 @@ const DisplayController = (function () {
     });
   };
 
-  return { renderBoard, updateMessage, showWinningCells };
+  return { renderBoard, updateMessage, showWinningCells, getPlayer2Marker };
 })();
