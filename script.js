@@ -30,7 +30,16 @@ const Gameboard = (function () {
 
 // Player object is used to define the details of the user
 const Player = (name, marker) => {
-  return { name, marker };
+  // Handling the score private variable in the Player object
+  let score = 0;
+
+  const incrementScore = () => {
+    score++;
+  };
+
+  const getScore = () => score;
+
+  return { name, marker, getScore, incrementScore };
 };
 
 // GameController Object used to define the logic flow of the game
@@ -39,6 +48,7 @@ const GameController = (function () {
   let player2 = Player("Player 2", "O");
   let currentPlayer = player1;
 
+  // Get the player values from the modal and display the message for player1 turn
   const getPlayers = (playersArray) => {
     [player1, player2] = playersArray;
     console.log(player1, player2);
@@ -65,6 +75,16 @@ const GameController = (function () {
     if (winner) {
       DisplayController.renderBoard();
       DisplayController.updateMessage(`${winner.playerName} Won!`);
+
+      // Increase the score of the winner
+      if (winner.playerName === player1.name) {
+        player1.incrementScore();
+      } else {
+        player2.incrementScore();
+      }
+
+      // Update the score and highlight the cells
+      DisplayController.updateScores(player1.getScore(), player2.getScore());
       DisplayController.showWinningCells(winner.winPattern);
       return;
     } else if (isTie()) {
@@ -141,26 +161,44 @@ const DisplayController = (function () {
     });
   });
 
+  // Dynamically change the marker of player 2 from player 1's marker
   const getPlayer2Marker = () => {
     player2MarkerDisplay.textContent = `Player 2's marker: ${
       selectionMarker.value === "X" ? "O" : "X"
     }`;
   };
 
+  // When the selection changes, change player 2's marker
   selectionMarker.addEventListener("change", getPlayer2Marker);
 
+  // Update the player information from the dialog form
   dialogForm.addEventListener("submit", (event) => {
+    // Prevent the page from refreshing
     event.preventDefault();
+
+    // Obtain the relevant values
     const player1Name = document.querySelector("#player1-name").value;
     const player2Name = document.querySelector("#player2-name").value;
     const player1Marker = selectionMarker.value;
     const player2Marker = player2MarkerDisplay.textContent.slice(-1);
 
+    // Invoke the getPlayers function to help handle the game logic in the GameController object
     const players = [
       Player(player1Name, player1Marker),
       Player(player2Name, player2Marker),
     ];
     GameController.getPlayers(players);
+
+    // Display the new names in the score display
+    const player1NameDisplay = document.querySelector(".player-1-name");
+    player1NameDisplay.textContent = player1Name;
+    const player2NameDisplay = document.querySelector(".player-2-name");
+    player2NameDisplay.textContent = player2Name;
+
+    // Initialise the scores
+    updateScores(0, 0);
+
+    // Close the dialog
     generatePlayersDialog.close();
   });
 
@@ -182,6 +220,14 @@ const DisplayController = (function () {
     message.textContent = messageUpdate;
   };
 
+  // Update scores on the UI
+  const updateScores = (player1Score, player2Score) => {
+    const player1ScoreDisplay = document.querySelector(".player-1-score");
+    player1ScoreDisplay.textContent = player1Score;
+    const player2ScoreDisplay = document.querySelector(".player-2-score");
+    player2ScoreDisplay.textContent = player2Score;
+  };
+
   // Highlighting the winning pattern by coloring the cells green
   const showWinningCells = (winPattern) => {
     gameCells.forEach((cell) => {
@@ -192,5 +238,11 @@ const DisplayController = (function () {
     });
   };
 
-  return { renderBoard, updateMessage, showWinningCells, getPlayer2Marker };
+  return {
+    renderBoard,
+    updateMessage,
+    showWinningCells,
+    getPlayer2Marker,
+    updateScores,
+  };
 })();
